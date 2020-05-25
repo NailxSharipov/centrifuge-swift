@@ -144,11 +144,12 @@ do {
 - [x] handle connection expired error
 - [ ] handle subscription expired error
 - [x] ping/pong to find broken connection
+- [ ] server-side subscriptions
 - [ ] message recovery mechanism
 
 ## Release
 
-Bump version in `Centrifuge.podspec`
+Bump version in `SwiftCentrifuge.podspec`
 
 Push to master and create new version tag.
 
