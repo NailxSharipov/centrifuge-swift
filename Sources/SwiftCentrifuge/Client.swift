@@ -12,7 +12,7 @@ import SwiftProtobuf
 
 public enum CentrifugeError: Error {
     case timeout
-    case duplicateSub
+    case duplicateSub(subscription: CentrifugeSubscription)
     case disconnected
     case unsubscribed
     case replyError(code: UInt32, message: String)
@@ -226,10 +226,13 @@ public class CentrifugeClient {
     public func newSubscription(channel: String, delegate: CentrifugeSubscriptionDelegate) throws -> CentrifugeSubscription {
         defer { subscriptionsLock.unlock() }
         subscriptionsLock.lock()
-        guard self.subscriptions.filter({ $0.channel == channel }).count == 0 else { throw CentrifugeError.duplicateSub }
-        let sub = CentrifugeSubscription(centrifuge: self, channel: channel, delegate: delegate)
-        self.subscriptions.append(sub)
-        return sub
+        if let subscription = self.subscriptions.first(where: { $0.channel == channel }) {
+            throw CentrifugeError.duplicateSub(subscription: subscription)
+        } else {
+            let sub = CentrifugeSubscription(centrifuge: self, channel: channel, delegate: delegate)
+            self.subscriptions.append(sub)
+            return sub
+        }
     }
 }
 
